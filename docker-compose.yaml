@@ -3,11 +3,11 @@ services:
     build: .
     image: streamlit_adm:1.0
     container_name: streamlit_adm
-    command: streamlit run adm_panel.py --server.port=8501 --server.address=0.0.0.0
+    command: streamlit run adm_panel.py --server.port=8502 --server.address=0.0.0.0
     volumes:
       - ./app:/code
     ports:
-      - 8502:8501
+      - 8502:8502
     tty: true
     restart: always
 

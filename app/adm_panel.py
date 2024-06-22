@@ -1,7 +1,9 @@
 import streamlit as st
 import plotly.express as px
 
-st.set_page_config(layout='wide')
+st.set_page_config(page_title='admin panel', layout='wide')
+
+st.cache_data.clear()
 
 conn = st.connection('apt_db')
 
@@ -25,7 +27,6 @@ query_rps = f'''
             from rps_usage
             order by date desc
             '''
-
 df_rps = conn.query(query_rps, index_col='id')
 
 st.header('piotrpietka.pl usage data', divider='red')
