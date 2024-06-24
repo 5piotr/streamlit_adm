@@ -1,5 +1,6 @@
 import streamlit as st
 import plotly.express as px
+import colorsys
 
 st.set_page_config(page_title='admin panel', layout='wide')
 
@@ -43,6 +44,7 @@ fig = px.scatter_mapbox(df_apt,
                         lon='lng',
                         zoom=5.4,
                         color='xgb_price_m2',
+                        hover_data='date',
                         size_max=20,
                         opacity=1,
                         color_continuous_scale=px.colors.sequential.Jet,
@@ -51,6 +53,15 @@ fig = px.scatter_mapbox(df_apt,
 fig.update_layout(mapbox_style='light')
 st.plotly_chart(fig, theme='streamlit', use_container_width=True)
 
+def get_n_hexcol(n=5):
+    # hsv_tuples = [(x * 0.23 / n, 1, 1) for x in range(n)]
+    hsv_tuples = [(0.53, 1, x * 1.0 / n) for x in range(n-1, -1, -1)]
+    hex_out = []
+    for rgb in hsv_tuples:
+        rgb = map(lambda x: int(x * 255), colorsys.hsv_to_rgb(*rgb))
+        hex_out.append('#%02x%02x%02x' % tuple(rgb))
+    return hex_out
+
 # date map
 px.set_mapbox_access_token(st.secrets.mapbox.token)
 fig = px.scatter_mapbox(df_apt,
@@ -58,9 +69,10 @@ fig = px.scatter_mapbox(df_apt,
                         lon='lng',
                         zoom=5.4,
                         color='date',
+                        hover_data='xgb_price_m2',
                         size_max=20,
                         opacity=1,
-                        color_continuous_scale=px.colors.sequential.Jet,
+                        color_discrete_sequence=get_n_hexcol(df_apt.shape[0]),
                         height=800,
                         title='Estimation dates')
 fig.update_layout(mapbox_style='light')
