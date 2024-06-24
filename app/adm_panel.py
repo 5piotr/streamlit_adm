@@ -54,8 +54,7 @@ fig.update_layout(mapbox_style='light')
 st.plotly_chart(fig, theme='streamlit', use_container_width=True)
 
 def get_n_hexcol(n=5):
-    # hsv_tuples = [(x * 0.23 / n, 1, 1) for x in range(n)]
-    hsv_tuples = [(0.53, 1, x * 1.0 / n) for x in range(n-1, -1, -1)]
+    hsv_tuples = [(0.9, 1, x * 1.0 / n) for x in range(n-1, -1, -1)]
     hex_out = []
     for rgb in hsv_tuples:
         rgb = map(lambda x: int(x * 255), colorsys.hsv_to_rgb(*rgb))
