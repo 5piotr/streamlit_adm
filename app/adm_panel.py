@@ -6,7 +6,8 @@ st.set_page_config(page_title='admin panel', layout='wide')
 
 st.cache_data.clear()
 
-conn = st.connection('apt_db')
+conn_apt = st.connection('apt_db')
+conn_airflow = st.connection('airflow_db')
 
 hide_decoration_bar_style = '''
     <style>
@@ -16,22 +17,35 @@ hide_decoration_bar_style = '''
 st.markdown(hide_decoration_bar_style, unsafe_allow_html=True)
 
 # getting data
+query_perf = f'''
+            select *
+            from apt_log
+            order by date desc
+            '''
+df_perf = conn_airflow.query(query_perf, index_col='id')
+
 query_apt = f'''
             select *
             from apt_estymations
             order by date desc
             '''
-df_apt = conn.query(query_apt, index_col='id')
+df_apt = conn_apt.query(query_apt, index_col='id')
 
 query_rps = f'''
             select *
             from rps_usage
             order by date desc
             '''
-df_rps = conn.query(query_rps, index_col='id')
+df_rps = conn_apt.query(query_rps, index_col='id')
 
-st.header('piotrpietka.pl usage data', divider='red')
+st.header('piotrpietka.pl models performance & usage data', divider='red')
 st.subheader('apartment price estimator')
+
+st.markdown('model performance')
+
+# performance table
+st.write(df_perf)
+
 st.markdown('last 10 estimations')
 
 # apt table
