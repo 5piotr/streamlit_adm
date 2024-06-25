@@ -41,10 +41,31 @@ df_rps = conn_apt.query(query_rps, index_col='id')
 st.header('piotrpietka.pl models performance & usage data', divider='red')
 st.subheader('apartment price estimator')
 
-st.markdown('model performance')
+_, col = st.columns([1, 3])
+with col:
+    # performance table
+    st.markdown('model statistics')
+    st.write(df_perf)
 
-# performance table
-st.write(df_perf)
+col1, col2 = st.columns(2)
+
+with col1:
+    # performance plot
+    fig = px.line(df_perf, x='date', y=['xgb_r2','ann_r2'],
+                title='Model performance',
+                color_discrete_map={
+                        'xgb_r2': px.colors.qualitative.D3_r[0],
+                        'ann_r2': px.colors.qualitative.D3_r[1]})
+    st.plotly_chart(fig, theme='streamlit', use_container_width=True)
+
+with col2:
+    # amount of training data
+    fig = px.line(df_perf, x='date', y=['data_raw','data_clean'],
+                title='Amount of training data',
+                color_discrete_map={
+                        'data_raw': px.colors.qualitative.D3[3],
+                        'data_clean': px.colors.qualitative.D3[2]})
+    st.plotly_chart(fig, theme='streamlit', use_container_width=True)
 
 st.markdown('last 10 estimations')
 
