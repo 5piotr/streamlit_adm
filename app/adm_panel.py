@@ -38,18 +38,37 @@ query_rps = f'''
             '''
 df_rps = conn_apt.query(query_rps, index_col='id')
 
+query_origin = f'''
+select
+a.date,
+a.location,
+count(*) as value
+from (
+    select
+    date,
+    case 
+        when voivodeship = 'zagranica' then 'foreign'
+        else 'PL'
+        end as location
+    from apt_details_raw) as a
+group by a.date, a.location;
+'''
+df_origin = conn_airflow.query(query_origin)
+
 st.header('piotrpietka.pl models performance & usage data', divider='red')
 st.subheader('apartment price estimator')
-
-_, col = st.columns([1, 3])
-with col:
-    # performance table
-    st.markdown('model statistics')
-    st.write(df_perf)
 
 col1, col2 = st.columns(2)
 
 with col1:
+    # performance table
+    st.markdown(' ')
+    st.markdown(' ')
+    st.markdown(' ')
+    st.markdown('model statistics')
+    st.write(df_perf)
+
+with col2:
     # performance plot
     fig = px.line(df_perf, x='date', y=['xgb_r2','ann_r2'],
                 title='Model performance',
@@ -58,7 +77,9 @@ with col1:
                         'ann_r2': px.colors.qualitative.D3_r[1]})
     st.plotly_chart(fig, theme='streamlit', use_container_width=True)
 
-with col2:
+col3, col4 = st.columns(2)
+
+with col3:
     # amount of training data
     fig = px.line(df_perf, x='date', y=['data_raw','data_clean'],
                 title='Amount of training data',
@@ -67,9 +88,15 @@ with col2:
                         'data_clean': px.colors.qualitative.D3[2]})
     st.plotly_chart(fig, theme='streamlit', use_container_width=True)
 
-st.markdown('last 10 estimations')
+with col4:
+    # location of apartments
+    fig = px.line(df_origin, x='date', y='value', color='location',
+                title='Location of apartments',
+                color_discrete_sequence=px.colors.qualitative.D3)
+    st.plotly_chart(fig, theme='streamlit', use_container_width=True)
 
 # apt table
+st.markdown('last 10 estimations')
 st.write(df_apt.iloc[:10,:])
 
 # price of sqm map
